@@ -1,10 +1,14 @@
 #! /usr/bin/env Rscript
 
 suppressPackageStartupMessages(library(argparse))
+suppressPackageStartupMessages(library(tidyr))
+suppressPackageStartupMessages(library(plyr))
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(DESeq2))
 
 # parse args
 parser <- ArgumentParser(
-    description='run deseq2 for two positives and two controls that allows to manually set library normalization factors. count tables are expected to contain a header line as e.g. supplied by featureCounts and have ids in the first and counts in the last column.')
+    description='run deseq2 for two positives and two controls. allows to manually set library normalization factors. count tables are expected to contain a header line as e.g. supplied by featureCounts and have ids in the first and counts in the last column.')
 parser$add_argument(
     'pos',
     type='character',
@@ -26,13 +30,8 @@ parser$add_argument(
     '--prefix',
     type='character',
     default='results_deseq2by2',
-    help='prefix output files with this string')
+    help='prefix output files with this string (default: results_deseq2by2)')
 args <- parser$parse_args()
-
-suppressPackageStartupMessages(library(tidyr))
-suppressPackageStartupMessages(library(plyr))
-suppressPackageStartupMessages(library(dplyr))
-suppressPackageStartupMessages(library(DESeq2))
 
 # check normalization factors
 if (!is.null(args$normalization_factors)) {
