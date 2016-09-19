@@ -1,2 +1,2 @@
 # misc_scripts
-A random collection of bytes this and that.
+A random collection of bytes to handle this and that.
