@@ -9,6 +9,7 @@ suppressPackageStartupMessages({
     library('pheatmap')
     library('RColorBrewer')
     library('ggplot2')
+    library('gplots')
 })
 
 # parse args
@@ -142,23 +143,22 @@ plot_sample_dists(dds)
 plot_sample_dists(rld)
 plot_sample_dists(vts)
 
+labs <- paste0(seq_len(ncol(dds)), ': ', do.call(paste, as.list(colData(dds)[c('condition', 'source')])))
+dat <- assay(rld)
+colnames(dat) <- labs
+distsRL <- dist(t(dat))
+mat <- as.matrix(distsRL)
+hc <- hclust(distsRL)
+hmcol <- colorRampPalette(brewer.pal(9, 'GnBu'))(100)
+heatmap.2(mat, Rowv=as.dendrogram(hc), symm=TRUE, trace='none', col = rev(hmcol),
+          main='Sample-to-sample distances', margin=c(25,25))
+
 data <- plotPCA(rld, intgroup=c('condition', 'source'), returnData=TRUE)
 percentVar <- round(100 * attr(data, 'percentVar'))
 ggplot(data, aes(PC1, PC2, color=condition, shape=source)) +
 geom_point(size=3) +
 xlab(paste0('PC1: ',percentVar[1],'% variance')) +
 ylab(paste0('PC2: ',percentVar[2],'% variance'))
-
-# # need meaningful labels, because from Galaxy, sample names are random
-# labs <- paste0(seq_len(ncol(dds)), ': ', do.call(paste, as.list(colData(dds)[factors])))
-# dat <- assay(rld)
-# colnames(dat) <- labs
-# distsRL <- dist(t(dat))
-# mat <- as.matrix(distsRL)
-# hc <- hclust(distsRL)
-# hmcol <- colorRampPalette(brewer.pal(9, 'GnBu'))(100)
-# heatmap.2(mat, Rowv=as.dendrogram(hc), symm=TRUE, trace='none', col = rev(hmcol),
-#           main='Sample-to-sample distances', margin=c(13,13))
 
 plotDispEsts(dds, main='Dispersion estimates')
 
