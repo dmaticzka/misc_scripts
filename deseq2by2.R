@@ -84,7 +84,7 @@ if (!is.null(args$normalization_factors)) {
 # finish deseq2 analysis
 dds <- estimateDispersions(dds)
 dds <- nbinomWaldTest(dds)
-res <- results(dds)
+res <- results(dds, contrast=c("condition","pos","neg"))
 
 # some output
 summary(res)
