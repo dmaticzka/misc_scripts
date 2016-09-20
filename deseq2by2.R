@@ -1,10 +1,14 @@
 #! /usr/bin/env Rscript
 
-suppressPackageStartupMessages(library(argparse))
-suppressPackageStartupMessages(library(tidyr))
-suppressPackageStartupMessages(library(plyr))
-suppressPackageStartupMessages(library(dplyr))
-suppressPackageStartupMessages(library(DESeq2))
+suppressPackageStartupMessages({
+    library(argparse)
+    library(tidyr)
+    library(plyr)
+    library(dplyr)
+    library(DESeq2)
+    library(pheatmap)
+    library(RColorBrewer)
+})
 
 # parse args
 parser <- ArgumentParser(
@@ -60,6 +64,7 @@ d[,1] <- NULL
 # prepare sample table
 sampleTable <-
     data.frame(
+        source=c(args$pos, args$neg),
         condition=c('pos','pos','neg','neg'),
         colnames(d))
 
@@ -113,3 +118,27 @@ write.table(
     paste0(args$prefix,'.deseq2_significant.csv'),
     quote=F,
     row.names=F)
+
+# plot clustering via sample-to-sample distances
+plot_sample_dists <- function(values) {
+    sampleDists <- dist(t(assay(values)))
+    sampleDistMatrix <- as.matrix(sampleDists)
+    rownames(sampleDistMatrix) <- paste(values$condition, values$source, sep="-")
+    colnames(sampleDistMatrix) <- NULL
+    colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+    pheatmap(sampleDistMatrix,
+    clustering_distance_rows=sampleDists,
+    clustering_distance_cols=sampleDists,
+    col=colors)
+}
+
+# do plots
+pdf(paste0(args$prefix,'.deseq2_plots.pdf'))
+
+vts <- varianceStabilizingTransformation(dds, blind=FALSE)
+rld <- rlog(dds, blind=FALSE)
+plot_sample_dists(dds)
+plot_sample_dists(rld)
+plot_sample_dists(vts)
+
+dev.off()
