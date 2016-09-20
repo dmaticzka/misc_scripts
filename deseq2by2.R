@@ -30,7 +30,13 @@ parser$add_argument(
     '--prefix',
     type='character',
     default='results_deseq2by2',
-    help='prefix output files with this string (default: results_deseq2by2)')
+    help='prefix output files with this string (default: results_deseq2by2).')
+parser$add_argument(
+    '-s',
+    '--significance',
+    type='double',
+    default='0.1',
+    help='set significance threshold for results written to prefix.deseq2_significant.csv (default: 0.1).')
 args <- parser$parse_args()
 
 # check normalization factors
@@ -100,10 +106,11 @@ write.table(
     sep="\t",
     quote=F,
     row.names=F)
-resSig <- filter(resFull, padj < 0.1)
+resSig <- filter(resFull, padj < args$)
 write.table(
     resSig,
     sep="\t",
     paste0(args$prefix,'.deseq2_significant.csv'),
     quote=F,
     row.names=F)
+sizeFactor
