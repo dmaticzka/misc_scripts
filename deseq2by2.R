@@ -141,7 +141,12 @@ plot_sample_dists(dds)
 plot_sample_dists(rld)
 plot_sample_dists(vts)
 
-print(plotPCA(rld, intgroup=c("condition","source")))
+data <- plotPCA(rld, intgroup=c("condition", "source"), returnData=TRUE)
+percentVar <- round(100 * attr(data, "percentVar"))
+ggplot(data, aes(PC1, PC2, color=condition, shape=source)) +
+geom_point(size=3) +
+xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+ylab(paste0("PC2: ",percentVar[2],"% variance"))
 
 # # need meaningful labels, because from Galaxy, sample names are random
 # labs <- paste0(seq_len(ncol(dds)), ": ", do.call(paste, as.list(colData(dds)[factors])))
