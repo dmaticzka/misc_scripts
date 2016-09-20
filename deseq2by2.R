@@ -141,4 +141,19 @@ plot_sample_dists(dds)
 plot_sample_dists(rld)
 plot_sample_dists(vts)
 
+print(plotPCA(rld, intgroup=c("condition","source")))
+
+# # need meaningful labels, because from Galaxy, sample names are random
+# labs <- paste0(seq_len(ncol(dds)), ": ", do.call(paste, as.list(colData(dds)[factors])))
+# dat <- assay(rld)
+# colnames(dat) <- labs
+# distsRL <- dist(t(dat))
+# mat <- as.matrix(distsRL)
+# hc <- hclust(distsRL)
+# hmcol <- colorRampPalette(brewer.pal(9, "GnBu"))(100)
+# heatmap.2(mat, Rowv=as.dendrogram(hc), symm=TRUE, trace="none", col = rev(hmcol),
+#           main="Sample-to-sample distances", margin=c(13,13))
+
+plotDispEsts(dds, main="Dispersion estimates")
+
 dev.off()
