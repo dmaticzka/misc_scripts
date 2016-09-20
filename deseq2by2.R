@@ -134,7 +134,7 @@ plot_sample_dists <- function(values) {
 }
 
 # do plots
-pdf(paste0(args$prefix,'.deseq2_plots.pdf'))
+pdf(paste0(args$prefix,'.deseq2_plots.pdf'), paper='a4')
 
 vts <- varianceStabilizingTransformation(dds, blind=FALSE)
 rld <- rlog(dds, blind=FALSE)
