@@ -1,13 +1,14 @@
 #! /usr/bin/env Rscript
 
 suppressPackageStartupMessages({
-    library(argparse)
-    library(tidyr)
-    library(plyr)
-    library(dplyr)
-    library(DESeq2)
-    library(pheatmap)
-    library(RColorBrewer)
+    library('argparse')
+    library('tidyr')
+    library('plyr')
+    library('dplyr')
+    library('DESeq2')
+    library('pheatmap')
+    library('RColorBrewer')
+    library('ggplot2')
 })
 
 # parse args
@@ -95,7 +96,7 @@ if (!is.null(args$normalization_factors)) {
 # finish deseq2 analysis
 dds <- estimateDispersions(dds)
 dds <- nbinomWaldTest(dds)
-res <- results(dds, contrast=c("condition","pos","neg"))
+res <- results(dds, contrast=c('condition','pos','neg'))
 
 # some output
 summary(res)
@@ -108,13 +109,13 @@ resFull <- arrange(dres, padj)
 write.table(
     resFull,
     paste0(args$prefix,'.deseq2_full.csv'),
-    sep="\t",
+    sep='\t',
     quote=F,
     row.names=F)
 resSig <- filter(resFull, padj < args$significance)
 write.table(
     resSig,
-    sep="\t",
+    sep='\t',
     paste0(args$prefix,'.deseq2_significant.csv'),
     quote=F,
     row.names=F)
@@ -123,9 +124,9 @@ write.table(
 plot_sample_dists <- function(values) {
     sampleDists <- dist(t(assay(values)))
     sampleDistMatrix <- as.matrix(sampleDists)
-    rownames(sampleDistMatrix) <- paste(values$condition, values$source, sep="-")
+    rownames(sampleDistMatrix) <- paste(values$condition, values$source, sep='-')
     colnames(sampleDistMatrix) <- NULL
-    colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+    colors <- colorRampPalette( rev(brewer.pal(9, 'Blues')) )(255)
     pheatmap(sampleDistMatrix,
     clustering_distance_rows=sampleDists,
     clustering_distance_cols=sampleDists,
@@ -141,24 +142,24 @@ plot_sample_dists(dds)
 plot_sample_dists(rld)
 plot_sample_dists(vts)
 
-data <- plotPCA(rld, intgroup=c("condition", "source"), returnData=TRUE)
-percentVar <- round(100 * attr(data, "percentVar"))
+data <- plotPCA(rld, intgroup=c('condition', 'source'), returnData=TRUE)
+percentVar <- round(100 * attr(data, 'percentVar'))
 ggplot(data, aes(PC1, PC2, color=condition, shape=source)) +
 geom_point(size=3) +
-xlab(paste0("PC1: ",percentVar[1],"% variance")) +
-ylab(paste0("PC2: ",percentVar[2],"% variance"))
+xlab(paste0('PC1: ',percentVar[1],'% variance')) +
+ylab(paste0('PC2: ',percentVar[2],'% variance'))
 
 # # need meaningful labels, because from Galaxy, sample names are random
-# labs <- paste0(seq_len(ncol(dds)), ": ", do.call(paste, as.list(colData(dds)[factors])))
+# labs <- paste0(seq_len(ncol(dds)), ': ', do.call(paste, as.list(colData(dds)[factors])))
 # dat <- assay(rld)
 # colnames(dat) <- labs
 # distsRL <- dist(t(dat))
 # mat <- as.matrix(distsRL)
 # hc <- hclust(distsRL)
-# hmcol <- colorRampPalette(brewer.pal(9, "GnBu"))(100)
-# heatmap.2(mat, Rowv=as.dendrogram(hc), symm=TRUE, trace="none", col = rev(hmcol),
-#           main="Sample-to-sample distances", margin=c(13,13))
+# hmcol <- colorRampPalette(brewer.pal(9, 'GnBu'))(100)
+# heatmap.2(mat, Rowv=as.dendrogram(hc), symm=TRUE, trace='none', col = rev(hmcol),
+#           main='Sample-to-sample distances', margin=c(13,13))
 
-plotDispEsts(dds, main="Dispersion estimates")
+plotDispEsts(dds, main='Dispersion estimates')
 
 dev.off()
