@@ -14,16 +14,16 @@ suppressPackageStartupMessages({
 
 # parse args
 parser <- ArgumentParser(
-    description='run deseq2 for two positives and two controls. allows to manually set library normalization factors. count tables are expected to contain a header line as e.g. supplied by featureCounts and have ids in the first and counts in the last column.')
+    description='run deseq2 with a simple positive/negative contrast. allows to manually set library normalization factors. count tables are expected to contain a header line as e.g. supplied by featureCounts and have ids in the first and counts in the last column. some summary plots are written to pdf.')
 parser$add_argument(
-    'pos',
+    '--pos',
     type='character',
-    nargs=2,
+    nargs='+',
     help='two tables containing counts of positive replicates.')
 parser$add_argument(
-    'neg',
+    '--neg',
     type='character',
-    nargs=2,
+    nargs='+',
     help='two tables containing counts of control replicates.')
 parser$add_argument(
     '-n',
