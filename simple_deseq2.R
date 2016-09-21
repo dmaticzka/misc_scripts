@@ -35,8 +35,8 @@ parser$add_argument(
     '-p',
     '--prefix',
     type='character',
-    default='results_deseq2by2',
-    help='prefix output files with this string (default: results_deseq2by2).')
+    default='simple_deseq2',
+    help='prefix output files with this string (default: simple_deseq2).')
 parser$add_argument(
     '-s',
     '--significance',
@@ -125,16 +125,18 @@ write.table(
     row.names=F)
 
 # plot clustering via sample-to-sample distances
-plot_sample_dists <- function(values) {
+plot_sample_dists <- function(values, title) {
     sampleDists <- dist(t(assay(values)))
     sampleDistMatrix <- as.matrix(sampleDists)
     rownames(sampleDistMatrix) <- paste(values$condition, values$source, sep='-')
     colnames(sampleDistMatrix) <- NULL
     colors <- colorRampPalette( rev(brewer.pal(9, 'Blues')) )(255)
-    pheatmap(sampleDistMatrix,
-    clustering_distance_rows=sampleDists,
-    clustering_distance_cols=sampleDists,
-    col=colors)
+    pheatmap(
+        sampleDistMatrix,
+        clustering_distance_rows=sampleDists,
+        clustering_distance_cols=sampleDists,
+        col=colors,
+        main=title)
 }
 
 # do plots
@@ -142,20 +144,13 @@ pdf(paste0(args$prefix,'.deseq2_plots.pdf'), paper='a4')
 
 vts <- varianceStabilizingTransformation(dds, blind=FALSE)
 rld <- rlog(dds, blind=FALSE)
-plot_sample_dists(dds)
-plot_sample_dists(rld)
-plot_sample_dists(vts)
 
-labs <- paste0(seq_len(ncol(dds)), ': ', do.call(paste, as.list(colData(dds)[c('condition', 'source')])))
-dat <- assay(rld)
-colnames(dat) <- labs
-distsRL <- dist(t(dat))
-mat <- as.matrix(distsRL)
-hc <- hclust(distsRL)
-hmcol <- colorRampPalette(brewer.pal(9, 'GnBu'))(100)
-heatmap.2(mat, Rowv=as.dendrogram(hc), symm=TRUE, trace='none', col = rev(hmcol),
-          main='Sample-to-sample distances', margin=c(25,25))
+# plot sample-to sample distances
+plot_sample_dists(dds, title="Sample-to-sample distances (untransformed)")
+plot_sample_dists(rld, title="Sample-to-sample distances (regularized log)")
+plot_sample_dists(vts, title="Sample-to-sample distances (variance stabilizing transformation)")
 
+# plot PCA
 data <- plotPCA(rld, intgroup=c('condition', 'source'), returnData=TRUE)
 percentVar <- round(100 * attr(data, 'percentVar'))
 ggplot(data, aes(PC1, PC2, color=condition, shape=source)) +
@@ -163,6 +158,7 @@ geom_point(size=3) +
 xlab(paste0('PC1: ',percentVar[1],'% variance')) +
 ylab(paste0('PC2: ',percentVar[2],'% variance'))
 
+# plot dispersion estimates
 plotDispEsts(dds, main='Dispersion estimates')
 
 dev.off()
