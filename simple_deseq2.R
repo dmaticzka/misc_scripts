@@ -30,7 +30,7 @@ parser$add_argument(
     '--normalization-factors',
     type='double',
     nargs='+',
-    help='if given, these values are used for library normalization. expects 4 space separated values in order pos1, pos2, neg1, neg2.')
+    help='if given, these values are used for library normalization. expects space separated values in order pos_1..pos_n, neg_1, neg_n.')
 parser$add_argument(
     '-p',
     '--prefix',
@@ -47,19 +47,21 @@ args <- parser$parse_args()
 
 # check normalization factors
 if (!is.null(args$normalization_factors)) {
-    if (length(args$normalization_factors) != 4) {
-        stop('must supply exactly four factors when doing manual library normalization')
+    if (length(args$normalization_factors) != length(args$pos) + length(args$neg)) {
+        stop('must supply as many normalization factors as replicates library normalization')
     }
 }
 
 # load counts
-pos1 <- read.table(args$pos[1], head=T) %>% select(1,ncol(.))
-pos2 <- read.table(args$pos[2], head=T) %>% select(1,ncol(.))
-neg1 <- read.table(args$neg[1], head=T) %>% select(1,ncol(.))
-neg2 <- read.table(args$neg[2], head=T) %>% select(1,ncol(.))
+load_counts <- function(fn) {
+    return(read.table(fn, head=T) %>% select(1,ncol(.)))
+}
+countfiles <- c(args$pos, args$neg)
+d <- lapply(countfiles, load_counts)
+names(d) <- countfiles
 
 # prepare counts for deseq2
-d <- join_all(list(pos1,pos2,neg1,neg2))
+d <- join_all(d)
 rownames(d) <- d[,1]
 d[,1] <- NULL
 
@@ -67,7 +69,9 @@ d[,1] <- NULL
 sampleTable <-
     data.frame(
         source=c(args$pos, args$neg),
-        condition=c('pos','pos','neg','neg'),
+        condition=c(
+            rep('pos', length(args$pos)),
+            rep('neg', length(args$neg))),
         colnames(d))
 
 print('using sample table:')
@@ -76,11 +80,10 @@ print('')
 print('')
 
 # create DESeq2 object
-dds <-
-    DESeqDataSetFromMatrix(
-        countData = d,
-        colData = sampleTable,
-        design = ~ condition)
+dds <- DESeqDataSetFromMatrix(
+    countData = d,
+    colData = sampleTable,
+    design = ~ condition)
 # pre-filtering to reduce memory size
 dds <- dds[ rowSums(counts(dds)) > 1, ]
 
