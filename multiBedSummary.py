@@ -42,9 +42,8 @@ annot = BedTool().annotate(i=args.regions,
                            files=args.bedfiles,
                            counts=True)
 
-# convert to numpy array of integers
-nfields = annot.field_count()
-counts = np.array([map(int, c[3:nfields]) for c in annot])
+# load counts to numpy array
+counts = np.loadtxt(annot.fn, usecols=list(range(3, 3 + len(args.bedfiles))))
 
 # combine matrix and lavels, save as npz file
 if args.labels is None:
