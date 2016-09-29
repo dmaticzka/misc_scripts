@@ -1,7 +1,8 @@
 #! /usr/bin/env python
 
+from pybedtools import BedTool
 import argparse
-# from pybedtools import BedTool
+import numpy as np
 
 parser = argparse.ArgumentParser(
     description="""
@@ -27,7 +28,6 @@ parser.add_argument('--outFileName', '-out',
                     required=True)
 
 parser.add_argument('--labels', '-l',
-                    metavar='sample1 sample2',
                     help='User defined labels instead of default labels from '
                     'file names. '
                     'Multiple labels have to be separated by spaces, e.g., '
@@ -36,4 +36,18 @@ parser.add_argument('--labels', '-l',
 
 args = parser.parse_args()
 
-# BedTool().annotate
+
+# count all overlaps with reference intervals
+annot = BedTool().annotate(i=args.regions,
+                           files=args.bedfiles,
+                           counts=True)
+
+# convert to numpy array of integers
+counts = np.array([map(int, c[3:5]) for c in annot])
+
+# combine matrix and lavels, save as npz file
+if args.labels is None:
+    labels = args.bedfiles
+else:
+    labels = args.labels
+np.savez(args.outFileName, labels=np.array(labels), matrix=counts)
