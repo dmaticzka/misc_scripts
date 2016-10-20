@@ -66,12 +66,9 @@ d_bed12 <- yb %>%
     # get block sizes
     mutate(
         bsize_1=q_end-q_start,
-        bsize_2=s_end-s_start)
-
-nreverse <- d_bed12 %>% filter(s_start<q_start) %>% nrow
-if (nreverse != 0) {
-    stop("Error, encountered pair that has s left of q.")
-}
+        bsize_2=s_end-s_start) %>%
+    # omit overlapping repeats
+    filter(s_start>q_end)
 
 # get actual bed12 format
 d_bed12 <- d_bed12 %>%
