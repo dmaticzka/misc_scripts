@@ -44,7 +44,7 @@ yb <- yb %>%
     # split first column containing absolute coordinates
     separate(
         bedid,
-        c("chr","chr_range","chr_strand"),
+        c("chr","chr_range","chr_strand","nothing"),
         sep = "[^[:alnum:]^+^-]+",
         convert=T,
         remove=F) %>%
