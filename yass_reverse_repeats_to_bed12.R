@@ -45,7 +45,7 @@ yb <- yb %>%
     separate(
         bedid,
         c("chr","chr_range","chr_strand","nothing"),
-        sep = "[^[:alnum:]^+^-]+",
+        sep = "[^[:alnum:]^+^-^_]+",
         convert=T,
         remove=F) %>%
     # second split to get chromosomal start stop coordinates separated by -
