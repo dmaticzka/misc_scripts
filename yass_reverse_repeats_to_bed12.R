@@ -22,8 +22,8 @@ parser$add_argument(
 
 args <- parser$parse_args()
 
-print(args$yassbed)
-print(args$outbed)
+# print(args$yassbed)
+# print(args$outbed)
 
 # read yass bed file
 yb <- read.table(
@@ -56,9 +56,6 @@ yb <- yb %>%
 
 # generate bed 12 for display
 d_bed12 <- yb %>%
-    # only keep s regions >= 150
-    filter(s_end-s_start>=150) %>%
-    rowwise %>%
     # get outer coordinates
     mutate(
         start=chr_start+q_start,
@@ -73,7 +70,7 @@ d_bed12 <- yb %>%
 # get actual bed12 format
 d_bed12 <- d_bed12 %>%
     transmute(
-        chr=chr,
+        '#chr'=chr,
         start=start,
         end=end,
         name=paste0(
@@ -90,7 +87,13 @@ d_bed12 <- d_bed12 %>%
         itemRGB="0,0,255",
         blockCount=2,
         blockSizes=paste(bsize_1,bsize_2,sep=","),
-        blockStarts=paste(0,s_start-q_start,sep=","))
+        blockStarts=paste(0,s_start-q_start,sep=","),
+        q_start=chr_start+q_start,
+        q_end=chr_start+q_end,
+        s_start=chr_start+s_start,
+        s_end=chr_start+s_end,
+        distance=s_start-q_end,
+        identity=identity)
 
 # write bed12 to disk
 write.table(
@@ -98,5 +101,5 @@ write.table(
     args$outbed,
     sep="\t",
     row.names=F,
-    col.names=F,
+    col.names=T,
     quote=F)
