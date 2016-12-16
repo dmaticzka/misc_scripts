@@ -1,5 +1,8 @@
 #! /usr/bin/env Rscript
 
+# requires conda packages:
+# bioconductor-deseq2 r-argparse r-pheatmap r-plyr r-dplyr r-ggplot2
+
 suppressPackageStartupMessages({
     library('argparse')
     library('tidyr')
@@ -14,7 +17,7 @@ suppressPackageStartupMessages({
 
 # parse args
 parser <- ArgumentParser(
-    description='run deseq2 with a simple positive/negative contrast. allows to manually set library normalization factors. count tables are expected to contain a header line as e.g. supplied by featureCounts and have ids in the first and counts in the last column. some summary plots are written to pdf.')
+    description='run deseq2 with a simple positive/negative contrast. allows to manually set library normalization factors. count tables are expected to contain a header line as e.g. supplied by featureCounts (from package subread) and have ids in the first and counts in the last column. counts columns should be titled with filename. some summary plots are written to pdf.')
 parser$add_argument(
     '--pos',
     type='character',
