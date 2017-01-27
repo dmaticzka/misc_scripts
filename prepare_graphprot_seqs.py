@@ -50,7 +50,7 @@ parser.add_argument(
     help="Length of viewpoint region at center of sequence")
 parser.add_argument(
     "--output_file_prefix",
-    default="",
+    default="prepare_graphprot_seqs",
     help="Prefix to use for output filenames")
 parser.add_argument(
     "--chromosome_limits",
