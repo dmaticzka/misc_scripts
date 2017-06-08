@@ -16,6 +16,7 @@
 #   * have to set default output prefix
 #   * handle "crazy" bed formats (eg 7 fields from piranha)
 #   * can't have same size for core and seq
+#   * create more verbose documentation
 
 from __future__ import print_function
 import argparse
