@@ -146,8 +146,8 @@ def get_flanks(cores,
                flank_upstream_length=flank_upstream_length,
                flank_downstream_length=flank_downstream_length):
     """Calculate flanking regions of a core region."""
+    logging.debug("get_flanks")
     if args.chromosome_limits is not None:
-        logging.debug("using chromosome_limits " + args.chromosome_limits)
         # get upstream flanks
         flanks_upstream = cores.flank(
             s=True,
@@ -195,17 +195,21 @@ def get_seqs(cores,
              viewpointfa_fn,
              genome_fa_fn=args.genome_fa_fn):
     """Prepare sequences and write them to disk."""
+    logging.debug("get_seqs")
     # get sequences
     genome_fa = BedTool(genome_fa_fn)
+    logging.debug("writing file " + cores.fn + ".tabseq")
     cores = cores.sequence(
         fi=genome_fa,
         s=True,
         tab=True, name=True).save_seqs(cores.fn + ".tabseq")
+    logging.debug("writing file " + flanks_upstream.fn + ".tabseq")
     flanks_upstream = flanks_upstream.sequence(
         fi=genome_fa,
         s=True,
         tab=True,
         name=True).save_seqs(flanks_upstream.fn + ".tabseq")
+    logging.debug("writing file " + flanks_downstream.fn + ".tabseq")
     flanks_downstream = flanks_downstream.sequence(
         fi=genome_fa,
         s=True,
@@ -221,7 +225,11 @@ def get_seqs(cores,
         core_reader = reader(core_tabseq, delimiter="\t")
         fdown_reader = reader(fdown_tabseq, delimiter="\t")
         for fup, core, fdown in izip(fup_reader, core_reader, fdown_reader):
-            assert fup[0] == core[0] == fdown[0], "Error: sequence ids of cores and flanks don't match."
+            # bedtools insists to add coordinates to sequence id, separated by ::
+            seqid_up = fup[0].split(":")[0]
+            seqid_core = core[0].split(":")[0]
+            seqid_down = fdown[0].split(":")[0]
+            assert seqid_up == seqid_core == seqid_down, "Error: sequence ids of cores and flanks don't match. fup[0] == core[0] == fdown[0]: '{}', '{}', '{}'".format(seqid_up, seqid_core, seqid_down)
             # setup fasta headers and sequences
             fa_header = ">" + core[0]
             seq_viewpoint = fup[1].lower() + core[1].upper() + fdown[1].lower()
@@ -238,7 +246,7 @@ centers = bsites.each(midpoint).saveas()
 # prepare positive instances
 logging.info("preparing positive instances")
 if (args.chromosome_limits):
-    logging.debug("using chromosome_limits " + args.chromosome_limits)
+    logging.debug("writing file " + pos_core_bed_fn)
     cores = centers.slop(s=True,
                          l=int(args.core_length / 2),
                          # -1 to account for the center nucleotide!
@@ -257,6 +265,7 @@ flanks_upstream, flanks_downstream = get_flanks(cores)
 get_seqs(cores, flanks_upstream, flanks_downstream, pos_seq_fa_fn)
 
 # prepare negative sites if requested
+logging.info("preparing negative instances")
 if args.negative_site_candidate_regions_fn:
     # get negative candidate regions
     negative_site_candidate_regions = BedTool(
@@ -273,7 +282,6 @@ if args.negative_site_candidate_regions_fn:
     logging.info("preparing negative instances")
     logging.info("starting from " + str(cores.count()) + " positive cores")
     if args.chromosome_limits:
-        logging.debug("using chromosome_limits " + args.chromosome_limits)
         chrom_param = dict(g=args.chromosome_limits)
     else:
         chrom_param = dict(genome=args.genome_id)
