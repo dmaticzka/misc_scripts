@@ -37,9 +37,10 @@ def test_stranded_shuffling_plus():
         "--core_length", "10",
         "--output_file_prefix", "test_stranded_shuffling_plus",
         "--negative_site_candidate_regions_fn", datadir_rel + "artificial_candidate_region_minus.bed",
-        "-v"
+        "-v",
+        expect_stderr=True,
     )
-    assert "derived negative cores: 0" in run.stdout, "Error, expecting zero negative instances."
+    assert "derived negative cores: 0" in run.stderr, "Error, expecting zero negative instances."
 
 
 def test_stranded_shuffling_minus():
@@ -54,9 +55,10 @@ def test_stranded_shuffling_minus():
         "--core_length", "10",
         "--output_file_prefix", "test_stranded_shuffling_minus",
         "--negative_site_candidate_regions_fn", datadir_rel + "artificial_candidate_region_plus.bed",
-        "-v"
+        "-v",
+        expect_stderr=True,
     )
-    assert "derived negative cores: 0" in run.stdout, "Error, expecting zero negative instances." + run.stderr + run.stdout
+    assert "derived negative cores: 0" in run.stderr, "Error, expecting zero negative instances." + run.stderr + run.stdout
 
 
 def test_stranded_shuffling_on_plus():
@@ -71,9 +73,10 @@ def test_stranded_shuffling_on_plus():
         "--core_length", "10",
         "--output_file_prefix", "test_stranded_shuffling_on_plus",
         "--negative_site_candidate_regions_fn", datadir_rel + "artificial_candidate_region_plus.bed",
-        "-v"
+        "-v",
+        expect_stderr=True,
     )
-    assert "derived negative cores: 2" in run.stdout, "Error, expecting two negative instances." + run.stdout + run.stderr
+    assert "derived negative cores: 2" in run.stderr, "Error, expecting two negative instances." + run.stdout + run.stderr
 
 
 def test_stranded_shuffling_minus_genomedef():
@@ -87,9 +90,10 @@ def test_stranded_shuffling_minus_genomedef():
         "--core_length", "10",
         "--output_file_prefix", "test_stranded_shuffling_minus",
         "--negative_site_candidate_regions_fn", datadir_rel + "artificial_candidate_region_plus.bed",
-        "-v"
+        "-v",
+        expect_stderr=True,
     )
-    assert "derived negative cores: 0" in run.stdout, "Error, expecting zero negative instances." + run.stderr + run.stdout
+    assert "derived negative cores: 0" in run.stderr, "Error, expecting zero negative instances." + run.stderr + run.stdout
 
 
 def test_stranded_shuffling_on_plus_genomedef():
@@ -103,9 +107,10 @@ def test_stranded_shuffling_on_plus_genomedef():
         "--core_length", "10",
         "--output_file_prefix", "test_stranded_shuffling_on_plus",
         "--negative_site_candidate_regions_fn", datadir_rel + "artificial_candidate_region_plus.bed",
-        "-v"
+        "-v",
+        expect_stderr=True,
     )
-    assert "derived negative cores: 2" in run.stdout, "Error, expecting two negative instances." + run.stdout + run.stderr
+    assert "derived negative cores: 2" in run.stderr, "Error, expecting two negative instances." + run.stdout + run.stderr
 
 
 def test_stranded_shuffling_on_minus():
@@ -120,6 +125,7 @@ def test_stranded_shuffling_on_minus():
         "--core_length", "10",
         "--output_file_prefix", "test_stranded_shuffling_on_minus",
         "--negative_site_candidate_regions_fn", datadir_rel + "artificial_candidate_region_minus.bed",
-        "-v"
+        "-v",
+        expect_stderr=True,
     )
-    assert "derived negative cores: 1" in run.stdout, "Error, expecting one negative instance." + run.stdout + run.stderr
+    assert "derived negative cores: 1" in run.stderr, "Error, expecting one negative instance." + run.stdout + run.stderr
