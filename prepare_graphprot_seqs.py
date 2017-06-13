@@ -23,7 +23,7 @@ import argparse
 from csv import reader
 from itertools import izip
 import logging
-from eden.util import configure_logging
+# from eden.util import configure_logging
 from pybedtools.featurefuncs import midpoint
 from pybedtools.helpers import get_chromsizes_from_ucsc
 from pybedtools import BedTool
@@ -65,8 +65,17 @@ parser.add_argument(
     help="Increase output verbosity")
 args = parser.parse_args()
 
+# configure logging
 logger = logging.getLogger()
-configure_logging(logger, verbosity=args.verbosity)
+# warning
+verbosity_level = 30
+if args.verbosity == 1:
+    # info
+    verbosity_level = 20
+if args.verbosity == 2:
+    # debug
+    verbosity_level = 10
+logger.setLevel(verbosity_level)
 
 # fixed global variables
 npeek = 2

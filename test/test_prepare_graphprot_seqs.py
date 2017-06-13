@@ -123,4 +123,3 @@ def test_stranded_shuffling_on_minus():
         "-v"
     )
     assert "derived negative cores: 1" in run.stdout, "Error, expecting one negative instance." + run.stdout + run.stderr
-
