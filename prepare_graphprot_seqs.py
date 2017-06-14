@@ -17,6 +17,7 @@
 #   * handle "crazy" bed formats (eg 7 fields from piranha)
 #   * can't have same size for core and seq
 #   * create more verbose documentation
+#   * works badly with bedtools 2.26.0 because shuffling is too slow. use bedtools 2.25.0
 
 from __future__ import print_function
 import argparse
@@ -286,12 +287,14 @@ if args.negative_site_candidate_regions_fn:
     else:
         chrom_param = dict(genome=args.genome_id)
     # shuffle plus strand peaks on plus strand regions
+    logging.debug("shuffling plus-strand sites")
     neg_cores_plus = cores.filter(select_plus_strand).shuffle(
         chrom=True,
         incl=processed_negative_site_candidate_regions_plus.fn,
         noOverlapping=True,
         **chrom_param).each(prefix_neg).saveas()
     # shuffle minus strand peaks on minus strand regions
+    logging.debug("shuffling minus-strand sites")
     neg_cores_minus = cores.filter(select_minus_strand).shuffle(
         chrom=True,
         incl=processed_negative_site_candidate_regions_minus.fn,
