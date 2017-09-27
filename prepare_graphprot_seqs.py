@@ -20,14 +20,15 @@
 #   * works badly with bedtools 2.26.0 because shuffling is too slow. use bedtools 2.25.0
 
 from __future__ import print_function
-import argparse
+from __future__ import division
+from builtins import zip
+from builtins import str
 from csv import reader
-from itertools import izip
-import logging
-# from eden.util import configure_logging
 from pybedtools.featurefuncs import midpoint
 from pybedtools.helpers import get_chromsizes_from_ucsc
 from pybedtools import BedTool
+import argparse
+import logging
 
 # parse command line arguments
 # positional arguments
@@ -103,8 +104,8 @@ neg_seq_fa_fn = args.output_file_prefix + ".negatives.fa"
 
 # calculate flank lengths
 flank_length = args.seq_length - args.core_length
-flank_upstream_length = int(flank_length / 2)
-flank_downstream_length = int(flank_length / 2) + (flank_length % 2)
+flank_upstream_length = flank_length // 2
+flank_downstream_length = flank_length // 2 + (flank_length % 2)
 if (args.core_length + flank_upstream_length + flank_downstream_length != args.seq_length):
     raise Exception("Error: bad length calculation.")
 
@@ -225,7 +226,7 @@ def get_seqs(cores,
         fup_reader = reader(fup_tabseq, delimiter="\t")
         core_reader = reader(core_tabseq, delimiter="\t")
         fdown_reader = reader(fdown_tabseq, delimiter="\t")
-        for fup, core, fdown in izip(fup_reader, core_reader, fdown_reader):
+        for fup, core, fdown in zip(fup_reader, core_reader, fdown_reader):
             # bedtools insists to add coordinates to sequence id, separated by ::
             seqid_up = fup[0].split(":")[0]
             seqid_core = core[0].split(":")[0]
@@ -250,16 +251,16 @@ logging.info("preparing positive instances")
 if (args.chromosome_limits):
     logging.debug("writing file " + pos_core_bed_fn)
     cores = centers.slop(s=True,
-                         l=int(args.core_length / 2),
+                         l=args.core_length // 2,
                          # -1 to account for the center nucleotide!
-                         r=int(args.core_length / 2) +
+                         r=args.core_length // 2 +
                          (args.core_length % 2) - 1,
                          g=args.chromosome_limits).each(offset_zero_by_one).saveas(pos_core_bed_fn)
 else:
     cores = centers.slop(s=True,
-                         l=int(args.core_length / 2),
+                         l=args.core_length // 2,
                          # -1 to account for the center nucleotide!
-                         r=int(args.core_length / 2) +
+                         r=args.core_length // 2 +
                          (args.core_length % 2) - 1,
                          genome=args.genome_id).each(offset_zero_by_one).saveas(pos_core_bed_fn)
 
