@@ -222,7 +222,7 @@ def get_seqs(cores,
     cores_seq_fn = cores.seqfn
     fdown_seq_fn = flanks_downstream.seqfn
     viewpointfa = open(viewpointfa_fn, "wb")
-    with open(fup_seq_fn, "rb") as fup_tabseq, open(cores_seq_fn, "rb") as core_tabseq, open(fdown_seq_fn, "rb") as fdown_tabseq:
+    with open(fup_seq_fn, "rt") as fup_tabseq, open(cores_seq_fn, "rt") as core_tabseq, open(fdown_seq_fn, "rt") as fdown_tabseq:
         fup_reader = reader(fup_tabseq, delimiter="\t")
         core_reader = reader(core_tabseq, delimiter="\t")
         fdown_reader = reader(fdown_tabseq, delimiter="\t")
