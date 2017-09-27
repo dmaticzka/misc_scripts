@@ -240,6 +240,7 @@ def get_seqs(cores,
             viewpointfa.write(seq_viewpoint + "\n")
     viewpointfa.close()
 
+
 # prepare input coordinates
 bsites = BedTool(args.bsites_fn).sort().saveas()
 centers = bsites.each(midpoint).saveas()
