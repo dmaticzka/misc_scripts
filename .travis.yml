@@ -33,6 +33,6 @@ install:
   - conda install future argparse bedtools==2.25.0 pybedtools
 
 script:
-  - flake8 --ignore=E501
+  - flake8 --ignore=E501 --ignore=E741
   - pylint --py3k .
   - pytest
