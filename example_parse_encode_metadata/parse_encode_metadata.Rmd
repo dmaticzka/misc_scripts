@@ -1,0 +1,192 @@
+---
+title: "Making sense of ENCODE downloads."
+output: html_notebook
+---
+
+This is an example for parsing ENCODE JSON format for eCLIP experiments using R and jsonlite. Why do this? ENCODE allows batch downloads based on search results (see https://www.encodeproject.org/help/batch-download/), but each file is named with a unique accession and the file format, e.g. `ENCFF238BOS.fastq.gz` and the download of a flat metadata file is currently not supported.
+
+We can get information related to these files via the ENCODE REST API (see https://www.encodeproject.org/help/rest-api/) in JSON format. In short, a regular search for experiments with the terms 'eclip' and 'dhx30' can be performed using  https://www.encodeproject.org/search/?searchTerm=eclip+dhx30&type=Experiment. Add `&limit=all&frame=embedded&format=json` to get information on all search results in JSON format.
+
+## Parse JSON using R and jsonlite
+
+```{r}
+# dhx30 eclip
+url = "https://www.encodeproject.org/search/?searchTerm=eclip+dhx30&type=Experiment&limit=all&frame=embedded&format=json"
+# full eclip -> json about 60 MB (files about 1TB)
+url = "https://www.encodeproject.org/search/?searchTerm=eclip&type=Experiment&limit=all&frame=embedded&format=json"
+```
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(magrittr)
+library(jsonlite)
+```
+
+jsonlite will parse a JASON document into a data frame (that can contain further embedded data frames). Here, the information about individual files is found in embedded file data frames. These have include different numbers and types of fields, so we can not simply unnest but have to select important fields instead.
+
+```{r}
+get_files_entries <- function(files_df) {
+  files_df %>%
+    # select imporant fields
+    select(accession,md5sum, file_format, assembly, paired_end,
+           paired_with, output_type, assembly, biological_replicates) %>%
+    # and unpack biological replicates lists
+    unnest(biological_replicates)
+}
+```
+
+Using above function to parse the JSON file into a flat table.
+
+```{r}
+df_flat<- readLines(url, warn=F) %>%
+  fromJSON() %>%
+  # extract2 is a magrittr function for [[
+  extract2("@graph") %$%
+  # keep informative fields and files dataframes
+  tibble(
+    "title" = target$title,
+    "gene_name" = target$gene_name,
+    "label" = target$label,
+    "biosample_summary" = biosample_summary,
+    "files" = files
+  ) %>%
+  # safely extract the important fields from embedded files dataframes
+  mutate(files = map(files, possibly(get_files_entries, NA))) %>%
+  filter(!is.na(files)) %>%
+  # all files dataframes have the same dimensions, now we can unnest
+  unnest()
+```
+
+A helper function to replace all underscore and whitespace with minus because I don't want whitespace in filenames and fields in filenames will be separated by underscores.
+
+```{r}
+sanitize_label <- function(label) {
+  # replace all underscore and whitespace with "-"
+  str_replace_all(label, "[\\s_]", "-")
+}
+```
+
+A function to assemble filenames based on the flattened table.
+
+```{r}
+prepare_fn <- function(df) {
+  # prepare subset fastq
+  # format: [protein_cell-type_replicate_mate]_reads.fastq.gz
+  fastq <- df %>%
+    filter(file_format=="fastq") %>%
+    mutate(fn_hr = str_c(
+      str_c(
+        sanitize_label(label), biosample_summary, str_c("rep", biological_replicates), str_c("R",paired_end),
+        sanitize_label(output_type),
+        sep="_"),
+      "fastq.gz",
+      sep=".")) %>%
+    mutate(fn_acc = str_c(accession,".fastq.gz"))
+
+  # prepare subset bam
+  # format: [protein_cell-type_replicate_reference-genome]_alignments.bam
+  bam <- df %>%
+    filter(file_format=="bam") %>%
+    mutate(fn_hr = str_c(
+      str_c(
+        sanitize_label(label),
+        biosample_summary,
+        str_c("rep", biological_replicates),
+        assembly,
+        sanitize_label(output_type),
+        sep="_"),
+      "bam",
+      sep="."))%>%
+    mutate(fn_acc = str_c(accession,".bam"))
+
+  # prepare subset bed
+  # format: [protein_cell-type_replicate_reference-genome]_peaks.bed.gz
+  bed <- df %>%
+    filter(file_format=="bed") %>%
+    mutate(fn_hr = str_c(
+      str_c(
+        sanitize_label(label),
+        biosample_summary,
+        str_c("rep", biological_replicates),
+        assembly,
+        sanitize_label(output_type),
+        sep="_"),
+      "bed.gz",
+      sep=".")) %>%
+    mutate(fn_acc = str_c(accession,".bed.gz"))
+
+  # prepare subset bigBed
+  # format: [protein_cell-type_replicate_reference-genome]_peaks.bigBed
+  bigbed <- df %>%
+    filter(file_format=="bigBed") %>%
+    mutate(fn_hr = str_c(
+      str_c(
+        sanitize_label(label),
+        biosample_summary,
+        str_c("rep", biological_replicates),
+        assembly,
+        sanitize_label(output_type),
+        sep="_"),
+      "bigBed",
+      sep=".")) %>%
+    mutate(fn_acc = str_c(accession,".bigBed"))
+
+  # prepare subset bigWig
+  # format: [protein_cell-type_replicate_reference-genome_plusminusorientation].bam
+  bigwig <- df %>%
+    filter(file_format=="bigWig") %>%
+    mutate(fn_hr = str_c(
+      str_c(
+        sanitize_label(label),
+        biosample_summary,
+        str_c("rep", biological_replicates),
+        assembly,
+        sanitize_label(output_type),
+        sep="_"),
+      "bigWig",
+      sep=".")) %>%
+    mutate(fn_acc = str_c(accession,".bigWig"))
+
+    # combine all
+    bind_rows(fastq,bam,bed,bigbed,bigwig)
+}
+```
+
+Finally, save everything.
+
+```{r}
+# convert filenames
+full_table <- df_flat %>% prepare_fn
+# save everything
+full_table %>%
+  write_tsv("eclip_metadata.csv")
+# save filenames and hashes
+full_table %>%
+  select(md5sum, fn_acc, fn_hr) %>%
+  write_tsv("eclip_map_filenames.csv", col_names = F)
+```
+
+
+## Usage Examples
+
+This table can now be used to check md5sums, rename the files, etc.
+
+```{bash eval=FALSE}
+# check md5 sums
+md5sum --check <(cut -f 1,2 ../eclip_map_filenames.csv)
+```
+
+```{bash eval=FALSE}
+# test run for parallel
+parallel --colsep "\t" -a <(head -n 3 eclip_map_filenames.csv) "echo {1} {2} {3}"
+```
+
+```{bash eval=FALSE}
+# compare list of prepared filenames and the downloaded files
+diff <(find * | grep -v '.bai$' | sort) <(cut -f 2 ../eclip_map_filenames.csv | sort)
+```
+
+```{bash eval=FALSE}
+# create hard links using human readable names
+parallel -j 1 --colsep "\t" -a eclip_map_filenames.csv "ln data_accession/{2} data_human/{3}"
+```
