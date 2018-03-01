@@ -4,4 +4,4 @@
 
 A random collection of bytes to handle this and that.
 
-* [Example](example_parse_encode_metadata/parse_encode_metadata.nb.html) on parsing metadata from ENCODE in JSON format using R.
+* [Example](http://htmlpreview.github.io/?https://github.com/dmaticzka/misc_scripts/blob/master/example_parse_encode_metadata/parse_encode_metadata.nb.html) on parsing metadata from ENCODE in JSON format using R.
