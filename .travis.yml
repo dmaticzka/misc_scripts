@@ -30,7 +30,7 @@ install:
   # setup general python testing
   - conda install flake8 pylint pytest scripttest
   # setup for prepare_graphprot_seqs.py
-  - conda install future argparse bedtools==2.27.1 pybedtools
+  - conda install future argparse bedtools pybedtools
 
 script:
   - flake8 --ignore=E501,E741
