@@ -33,8 +33,8 @@ install:
   - conda install future argparse bedtools pybedtools
 
 script:
-  - flake8 --ignore=E501,E741
-  - pylint --py3k .
+  - flake8 --ignore=E501,E741 bin test
+  - pylint --py3k bin test
   - pytest
 
 after_success:

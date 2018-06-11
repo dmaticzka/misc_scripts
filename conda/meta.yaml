@@ -2,6 +2,9 @@ package:
   name: misc_scripts
   version: {{ environ['VERSION'] }}
 
+source:
+    path: ../bin
+
 build:
   script_env:
    - VERSION
