@@ -1,4 +1,5 @@
 # from re import search
+from __future__ import absolute_import
 from scripttest import TestFileEnvironment
 
 bindir = "bin/"
