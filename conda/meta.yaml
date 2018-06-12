@@ -1,0 +1,32 @@
+package:
+  name: misc_scripts
+  version: {{ environ['VERSION'] }}
+
+source:
+    path: ../bin
+
+build:
+  script_env:
+   - VERSION
+   - CONDA_BLD_PATH
+   - TRAVIS_PULL_REQUEST
+   - TRAVIS_PYTHON_VERSION
+
+requirements:
+  build:
+      - argparse
+      - flake8
+      - future
+      - pylint
+      - pytest
+      - scripttest
+  run:
+      - argparse
+      - future
+      - bedtools
+      - pybedtools
+
+about:
+  home: https://travis-ci.org/dmaticzka/misc_scripts
+  license: MIT
+  summary: A random collection of bytes to handle this and that.

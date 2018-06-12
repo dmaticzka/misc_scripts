@@ -19,6 +19,7 @@
 #   * create more verbose documentation
 #   * works badly with bedtools 2.26.0 because shuffling is too slow. use bedtools 2.25.0
 
+from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import division
 from builtins import zip

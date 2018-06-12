@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 
+from __future__ import absolute_import
 from pybedtools import BedTool
 import argparse
 import numpy as np

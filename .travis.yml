@@ -30,9 +30,13 @@ install:
   # setup general python testing
   - conda install flake8 pylint pytest scripttest
   # setup for prepare_graphprot_seqs.py
-  - conda install future argparse bedtools==2.27.1 pybedtools
+  - conda install future argparse bedtools pybedtools
 
 script:
-  - flake8 --ignore=E501,E741
-  - pylint --py3k .
+  - flake8 --ignore=E501,E741 bin test
+  - pylint --py3k bin test
   - pytest
+
+after_success:
+  - echo $TRAVIS_PYTHON_VERSION
+  - test $TRAVIS_BRANCH = "master" && test $TRAVIS_PULL_REQUEST = "false" && conda install conda-build && conda install anaconda-client && bash conda/conda_upload.sh

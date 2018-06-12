@@ -1,7 +1,8 @@
 # from re import search
+from __future__ import absolute_import
 from scripttest import TestFileEnvironment
 
-bindir = ""
+bindir = "bin/"
 script = "prepare_graphprot_seqs.py"
 # test file environment
 testdir = "test/testenv_prepare_graphprot_seqs"
