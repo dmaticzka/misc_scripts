@@ -8,7 +8,7 @@ conda config --set anaconda_upload no
 export CONDA_BLD_PATH=~/conda-bld
 export VERSION=`date +%Y.%m.%d`
 conda build . && \
-anaconda ´
+anaconda \
 -t $CONDA_UPLOAD_TOKEN upload \
 -u $USER \
 -l nightly \
