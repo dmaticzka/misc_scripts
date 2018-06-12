@@ -10,6 +10,7 @@ build:
    - VERSION
    - CONDA_BLD_PATH
    - TRAVIS_PULL_REQUEST
+   - TRAVIS_PYTHON_VERSION
 
 requirements:
   build:
