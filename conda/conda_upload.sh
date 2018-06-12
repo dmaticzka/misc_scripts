@@ -2,8 +2,6 @@
 PKG_NAME=misc_scripts
 USER=dmaticzka
 
-echo $TRAVIS_PYTHON_VERSION
-
 OS=linux-64
 mkdir ~/conda-bld
 conda config --set anaconda_upload no

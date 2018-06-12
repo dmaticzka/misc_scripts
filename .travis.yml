@@ -38,5 +38,4 @@ script:
   - pytest
 
 after_success:
-  - echo $TRAVIS_PYTHON_VERSION
   - test $TRAVIS_BRANCH = "master" && test $TRAVIS_PULL_REQUEST = "false" && conda install conda-build && conda install anaconda-client && bash conda/conda_upload.sh
