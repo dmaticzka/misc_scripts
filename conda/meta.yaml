@@ -9,6 +9,7 @@ build:
   script_env:
    - VERSION
    - CONDA_BLD_PATH
+   - TRAVIS_PULL_REQUEST
 
 requirements:
   build:
