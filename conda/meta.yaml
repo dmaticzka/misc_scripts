@@ -14,6 +14,7 @@ build:
 
 requirements:
   build:
+      - python
       - argparse
       - flake8
       - future
@@ -21,6 +22,7 @@ requirements:
       - pytest
       - scripttest
   run:
+      - python
       - argparse
       - future
       - bedtools

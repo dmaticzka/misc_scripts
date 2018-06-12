@@ -7,7 +7,7 @@ mkdir ~/conda-bld
 conda config --set anaconda_upload no
 export CONDA_BLD_PATH=~/conda-bld
 export VERSION=`date +%Y.%m.%d`
-conda build . --python $TRAVIS_PYTHON_VERSION && \
+conda build . && \
 anaconda \
 -t $CONDA_UPLOAD_TOKEN upload \
 -u $USER \
