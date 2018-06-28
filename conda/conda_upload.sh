@@ -11,6 +11,6 @@ conda build . && \
 anaconda \
 -t $CONDA_UPLOAD_TOKEN upload \
 -u $USER \
--l nightly \
+#-l nightly \
 --force \
 $CONDA_BLD_PATH/$OS/$PKG_NAME-`date +%Y.%m.%d`-py`echo ${TRAVIS_PYTHON_VERSION} | tr -d '.'`_0.tar.bz2
