@@ -21,12 +21,14 @@ requirements:
       - pylint
       - pytest
       - scripttest
+      - r-argparse
   run:
       - python
       - argparse
       - future
       - bedtools
       - pybedtools
+      - r-argparse
 
 about:
   home: https://travis-ci.org/dmaticzka/misc_scripts
