@@ -22,6 +22,7 @@ requirements:
       - pytest
       - scripttest
       - r-argparse
+      - r-dplyr
   run:
       - python
       - argparse
@@ -29,6 +30,7 @@ requirements:
       - bedtools
       - pybedtools
       - r-argparse
+      - r-dplyr
 
 about:
   home: https://travis-ci.org/dmaticzka/misc_scripts
