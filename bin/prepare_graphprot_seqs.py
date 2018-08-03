@@ -177,7 +177,7 @@ def get_flanks(cores,
             l=0,
             genome=args.genome_id).saveas()
     # check if sites and flanks have the same number of entries
-    if cores.count() == flanks_upstream.count() == flanks_downstream.count():
+    if cores.count() == flanks_upstream.count() == flanks_downstream.count() or flanks_upstream.count() == flanks_downstream.count() == 0:
         return flanks_upstream, flanks_downstream
     else:
         if True:
@@ -222,7 +222,20 @@ def get_seqs(cores,
     fup_seq_fn = flanks_upstream.seqfn
     cores_seq_fn = cores.seqfn
     fdown_seq_fn = flanks_downstream.seqfn
+    logging.debug("writing file " + viewpointfa_fn + ".tabseq")
     viewpointfa = open(viewpointfa_fn, "w")
+    # special case: without flanks
+    if flank_length == 0:
+        with open(cores_seq_fn, "r") as core_tabseq:
+            core_reader = reader(core_tabseq, delimiter="\t")
+            for core in core_reader:
+                fa_header = ">" + core[0]
+                seq_viewpoint = core[1].upper()
+                viewpointfa.write(fa_header + "\n")
+                viewpointfa.write(seq_viewpoint + "\n")
+            viewpointfa.close()
+        return
+    # write with flanks
     with open(fup_seq_fn, "r") as fup_tabseq, open(cores_seq_fn, "r") as core_tabseq, open(fdown_seq_fn, "r") as fdown_tabseq:
         fup_reader = reader(fup_tabseq, delimiter="\t")
         core_reader = reader(core_tabseq, delimiter="\t")
