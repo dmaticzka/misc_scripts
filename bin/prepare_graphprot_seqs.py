@@ -12,7 +12,6 @@
 #   * check if seq length and core length arguments match or handle properly
 #   * handle input/output error gracefully
 #   * check if input bed coordinates are stranded
-#   * seq_len == core_len does not work
 #   * have to set default output prefix
 #   * handle "crazy" bed formats (eg 7 fields from piranha)
 #   * can't have same size for core and seq
