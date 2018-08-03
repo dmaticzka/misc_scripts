@@ -1,4 +1,4 @@
-#!/urs/bin/env bash
+#!/usr/bin/env bash
 [ $# -ne 4 ] &&  echo "Usage:  $(basename $0) pos_dir neg_dir work_dir genometab" && echo "Instead of: $(basename $0) $*"  && exit 1
 
 JAMM=JAMM.sh
