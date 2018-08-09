@@ -3,7 +3,7 @@ from __future__ import absolute_import
 from scripttest import TestFileEnvironment
 
 bindir = "bin/"
-script = "prepare_graphprot_seqs.py"
+script = "graphprot_prepare_training_seqs.py"
 # test file environment
 testdir = "test/testenv_prepare_graphprot_seqs"
 # directories relative to test file environment
