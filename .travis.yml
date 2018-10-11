@@ -24,8 +24,8 @@ install:
   - source activate test-environment
   # bioconda setup
   - conda config --add channels defaults
-  - conda config --add channels conda-forge
   - conda config --add channels bioconda
+  - conda config --add channels conda-forge
   # setup general python testing
   - conda install flake8 pytest scripttest
   # setup for prepare_graphprot_seqs.py
