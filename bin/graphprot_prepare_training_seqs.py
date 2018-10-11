@@ -266,15 +266,13 @@ if (args.chromosome_limits):
     cores = centers.slop(s=True,
                          l=args.core_length // 2,
                          # -1 to account for the center nucleotide!
-                         r=args.core_length // 2 +
-                         (args.core_length % 2) - 1,
+                         r=args.core_length // 2 + (args.core_length % 2) - 1,
                          g=args.chromosome_limits).each(offset_zero_by_one).saveas(pos_core_bed_fn)
 else:
     cores = centers.slop(s=True,
                          l=args.core_length // 2,
                          # -1 to account for the center nucleotide!
-                         r=args.core_length // 2 +
-                         (args.core_length % 2) - 1,
+                         r=args.core_length // 2 + (args.core_length % 2) - 1,
                          genome=args.genome_id).each(offset_zero_by_one).saveas(pos_core_bed_fn)
 
 flanks_upstream, flanks_downstream = get_flanks(cores)
