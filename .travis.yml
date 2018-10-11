@@ -1,7 +1,6 @@
 language: python
 python:
   # We don't actually use the Travis Python, but this keeps it organized.
-  - "2.7"
   - "3.6"
 install:
   - sudo apt-get update
@@ -28,13 +27,12 @@ install:
   - conda config --add channels conda-forge
   - conda config --add channels bioconda
   # setup general python testing
-  - conda install flake8 pylint pytest scripttest
+  - conda install flake8 pytest scripttest
   # setup for prepare_graphprot_seqs.py
   - conda install future argparse bedtools pybedtools
 
 script:
   - flake8 --ignore=E501,E741 bin test
-  - pylint --py3k bin test
   - pytest
 
 after_success:
